@@ -1,0 +1,74 @@
+{
+  "compilerOptions": {
+    // ... 他の設定
+    // "types": ["react", "react-dom"], /* 🛡️ node を一旦外して様子を見る */
+    // ...
+    "target": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true, /* 🛡️ 最強の厳格モード */
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Node", /* 🚀 Windows環境での型探索を安定させるためにNodeに固定 */
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    
+    /* 🛡️ JSXと型定義の核心設定 */
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "types": ["react", "react-dom", "node"], 
+    
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "react": ["./node_modules/@types/react"],
+      "react-dom": ["./node_modules/@types/react-dom"],
+      "react-dom/client": ["./node_modules/@types/react-dom/client"]
+    }
+  },
+  "include": [
+    "src/**/*", 
+    "main.tsx", 
+    "App.tsx", 
+    "node_modules/@types" /* 🛡️ 型定義を強制スキャン */
+  ],
+  "exclude": ["node_modules"]
+}
+
+
+// Cjsx":"react-jsx",
+//     /* 👇 以下の 2 つを追加して、エディタに React を強制認識させる */
+//     "types": ["react", "react-dom"],
+//     "baseUrl": ".",
+//     "paths": {
+//       "*": ["node_modules/*", "src/*"]
+//     }
+//   },
+//   "include": ["src/**/*"] 
+// }
+
+
+
+// // {
+// //   "compilerOptions": {
+// //     "target": "ESNext",
+// //     "lib": ["DOM", "DOM.Iterable", "ESNext"],
+// //     "allowJs": false,
+// //     "skipLibCheck": true,
+// //     "esModuleInterop": true,
+// //     "allowSyntheticDefaultImports": true,
+// //     "strict": true,  /* 🛡️ 最強の厳格モードを有効化 */
+// //     "forceConsistentCasingInFileNames": true,
+// //     "module": "ESNext",
+// //     "moduleResolution": "Node",
+// //     "resolveJsonModule": true,
+// //     "isolatedModules": true,
+// //     "noEmit": true,
+// //     "jsx": "react-jsx"
+// //   },
+// //   "include": ["src"]
+// // }

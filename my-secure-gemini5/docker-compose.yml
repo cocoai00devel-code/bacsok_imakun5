@@ -1,0 +1,221 @@
+services:
+  # --- 🚀 玄関 (Go) ---
+  gateway:
+    build: 
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: fortress-gateway
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./gateway:/app
+    command: go run main.go 
+    depends_on:
+      - policy-engine
+      - rust-backend
+    networks:
+      - fortress-net
+
+  # --- ⚖️ 審判所 (Haskell) ---
+  policy-engine:
+    build:
+      context: ./policy-server
+      dockerfile: Dockerfile 
+    container_name: fortress-policy
+    expose:
+      - "8000"
+    networks:
+      - fortress-net
+
+  # --- 🛡️ 金庫 (Rust) ---
+  rust-backend:
+    build: ./backend
+    container_name: fortress-backend
+    volumes:
+      - ./backend:/app
+      - cargo-cache:/usr/local/cargo/registry
+    expose:
+      - "5000"
+    env_file:
+      - .env
+    networks:
+      - fortress-net
+
+  # --- 🎨 管制塔 (React/TypeScript) 【補正：追加】 ---
+  frontend:
+    build: ./frontend
+    container_name: fortress-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - gateway
+    networks:
+      - fortress-net
+
+networks:
+  fortress-net:
+    driver: bridge
+
+volumes:
+  cargo-cache:
+
+
+
+# services:
+#   # --- 🚀 玄関 (Go): 保存したら即反映 (Hot Reload) ---
+#   gateway:
+#     build: 
+#       context: ./gateway
+#       dockerfile: Dockerfile
+#     container_name: fortress-gateway
+#     ports:
+#       - "3000:3000"
+#     volumes:
+#       - ./gateway:/app # 👈 手元のコードを同期
+#     # air などのツールを使うと、保存時に自動で go run し直してくれます
+#     command: go run main.go 
+#     depends_on:
+#       - policy-engine
+#       - rust-backend
+#     networks:
+#       - fortress-net
+
+#   # --- ⚖️ 審判所 (Haskell): キャッシュ層を分けた最強ビルド ---
+#   policy-engine:
+#     build:
+#       context: ./policy-server
+#       # 先ほど作成したマルチステージDockerfileを指定
+#       dockerfile: Dockerfile 
+#     container_name: fortress-policy
+#     expose:
+#       - "8000"
+#     networks:
+#       - fortress-net
+
+#   # --- 🛡️ 金庫 (Rust): 開発時は高速コンパイルモード ---
+#   rust-backend:
+#     build: ./backend
+#     container_name: fortress-backend
+#     volumes:
+#       - ./backend:/app
+#       - cargo-cache:/usr/local/cargo/registry # 👈 Rustのビルドを爆速化
+#     expose:
+#       - "5000"
+#     env_file:
+#       - .env
+#     networks:
+#       - fortress-net
+
+# networks:
+#   fortress-net:
+#     driver: bridge
+
+# volumes:
+#   cargo-cache: # Rustのライブラリを保存しておく領域
+
+
+# # services:
+# #   # --- 🚀 最新鍵付き玄関（Go）Goセキュア・ゲートウェイ (Go) 【新設！】 第2層：Go ゲートウェイ (唯一の窓口) ---
+# #   gateway:
+# #     build: ./gateway
+# #     container_name: fortress-gateway
+# #     ports:
+# #       - "3000:3000"
+# #     depends_on:
+# #       - policy-engine
+# #       - rust-backend
+# #     networks:
+# #       - fortress-net
+
+# #   # --- ⚖️ 審判所（Haskell） 第3層：Haskell 審判所 (論理チェック) ---
+# #   policy-engine:
+# #     build: ./policy-server
+# #     container_name: fortress-policy
+# #     expose:
+# #       - "8000"
+# #     networks:
+# #       - fortress-net
+
+# #   # --- 🛡️ バックエンド要塞 (Rust) 第4層：Rust 金庫 (API実行) ---
+# #   rust-backend:
+# #     build: ./backend
+# #     container_name: fortress-backend
+# #     expose:
+# #       - "5000"
+# #     env_file:
+# #       - .env  # 👈 ここに GEMINI_API_KEY を書いたファイルを置く
+# #     networks:
+# #       - fortress-net
+
+# # networks:
+# #   fortress-net:
+# #     driver: bridge
+
+
+
+
+# # services:
+# #   # 🛡️ バックエンド要塞 (Rust)
+# #   # backend:
+# #   #   build: ./backend
+# #   #   ports:
+# #   #     - "3000:3000"
+# #   #   env_file:
+# #   #     - ./backend/.env
+
+# #    # 🛡️ バックエンド要塞 (Rust)
+# #   backend:
+# #     build: ./backend
+# #     # ports（外部公開）を削除し、expose（内部公開）に変更
+# #     expose:
+# #       - "8080"
+# #     env_file:
+# #       - ./backend/.env
+
+# #   # 🎨 フロントエンド外装 (React + TS)
+# #   # frontend:
+# #   #   build: ./frontend
+# #   #   ports:
+# #   #     - "5173:5173"
+# #   #   depends_on:
+# #   #     - backend
+
+
+
+# #   frontend:
+# #     build: ./frontend
+# #     ports:
+# #       - "5173:5173"
+# #     depends_on:
+# #       - gateway # 👈 Goが動いてから起動するように変更
+
+# #   # 🚀 Goセキュア・ゲートウェイ (Go) 【新設！】
+# #   gateway:
+# #     build: ./gateway
+# #     ports:
+# #       - "3000:3000" # 👈 外部からのアクセス（玄関口）をGoが担当
+# #     environment:
+# #       - BACKEND_URL=ws://backend:8080/ws
+# #     depends_on:
+# #       - backend
+  
+# #    services:
+# #   # 審判所（Haskell）
+# #   policy-engine:
+# #     build: ./policy-server
+# #     # 外部には公開せず、内部ネットワークでのみ待機
+# #     expose:
+# #       - "8000"
+
+# #   # 玄関（Go）
+# #   gateway:
+# #     build: ./gateway
+# #     ports:
+# #       - "3000:3000" # ここだけが外の世界と繋がる
+# #     depends_on:
+# #       - policy-engine
+# #       - backend
+
+ 

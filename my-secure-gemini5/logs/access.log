@@ -1,0 +1,6 @@
+-----------------------------------------------------------
+🛡️ Nim Immune System: Access Log Initialized.
+-----------------------------------------------------------
+2026-01-01 00:00:00 | SYSTEM | MSG: 監視を開始しました。
+2026-01-01 00:01:00 | TEST_IP | CMD: ' OR 1=1 -- | REASON: SQL_INJECTION_PATTERN
+2026-01-01 00:02:00 | TEST_IP | CMD: UNKNOWN | REASON: REPEATED_FAILURE
