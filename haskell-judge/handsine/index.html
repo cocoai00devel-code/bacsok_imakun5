@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <style>
+        /* ここで指文字フォントを読み込む（画像なしの鍵） */
+        @font-face {
+            font-family: 'FingerSpelling';
+            src: url('path/to/your/font.ttf'); 
+        }
+
+        #sign-window {
+            width: 300px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 200px; /* フォントを大きくして手のように見せる */
+            border: 4px solid #333;
+            font-family: 'FingerSpelling', 'Arial'; /* フォントがあれば手が、なければ文字が出る */
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+
+    <input type="text" id="targetText" placeholder="文字を入力（例：HELLO）">
+    <button onclick="playSign()">アニメーション再生</button>
+
+    <div id="sign-window">?</div>
+
+    <script>
+        function playSign() {
+            const text = document.getElementById('targetText').value.toUpperCase();
+            const display = document.getElementById('sign-window');
+            let i = 0;
+
+            const timer = setInterval(() => {
+                if (i < text.length) {
+                    display.innerText = text[i]; // ここで文字が切り替わる＝指が動く
+                    i++;
+                } else {
+                    clearInterval(timer); // 終わったら停止
+                }
+            }, 600); // 0.6秒ごとに指の形を変える
+        }
+    </script>
+</body>
+</html>
