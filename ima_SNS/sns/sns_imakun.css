@@ -1,0 +1,383 @@
+/* <style> */
+/* sns_imakun.css */
+        /* CSSは変更なし */
+        body {
+            margin: 0;
+            background: #0f0f0f;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        #waveCanvas {
+            position: fixed;
+            top: 0; 
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+        }
+
+        /* UIコンテナ（スマホ縦横対応） */
+        #ui {
+            position: absolute;
+            bottom: calc(4% + env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* メッセージ表示エリア：制限を解除し全表示を可能にする */
+        #chat-log {
+            max-height: 80vh;           /* 画面の8割まで表示領域を拡大し、長文に対応 */
+            overflow-y: auto;           /* 内容が増えた際にスクロールで全確認可能 */
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 15px;              /* 余白を広げて視認性を向上 */
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            backdrop-filter: blur(5px); /* 背景のボケ効果を維持 */
+            scroll-behavior: smooth;    /* スムーズなスクロールで全文を追う */
+        }
+
+        /* メッセージ本体：22文字ごとの改行を完全に再現する */
+        /* --- 共通：吹き出しの基本設計 --- */
+        .chat-message {
+            position: relative;
+            display: inline-block;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: left;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.5;
+            margin: 10px 20px; /* 突起のための余白 */
+            max-width: 85%;
+            white-space: pre-wrap; /* 22文字改行を維持 */
+            word-wrap: break-word;
+        }
+    /* --- ユーザーメッセージ（右側に突起） --- */
+    .user-message {
+        align-self: flex-end;
+        background-color: #9bee8c; /* ご指定の明るい緑 */
+        color: #000000;
+    }
+    .user-message::after {
+        content: "";
+        position: absolute;
+        top: 35%;
+        right: 0; /* 右側に配置 */
+        border-style: solid;
+        border-width: 0 0 16px 16px;
+        border-color: transparent transparent transparent #9bee8c;
+        translate: 100% calc(-50% - 0.4px);
+        transform: skew(0, -10deg);
+        transform-origin: left;
+    }
+
+       /* AI（裁判官）の回答：ご提示の2案を合体させた設計 */
+    .ai-message {
+        position: relative;
+        display: inline-block;
+        margin-top: 30px;    /* 上の突起のための余白 */
+        margin-bottom: 10px;
+        padding: 16px;
+        /* 1案目の枠線と角丸を採用 */
+        border: 2px solid #63e418; 
+        border-radius: 8px;
+        /* 1案目の背景色を採用 */
+        background-color: #e2feff;
+        text-align: left;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #000000;
+        max-width: 85%;
+        align-self: flex-start;
+        white-space: pre-wrap; /* 22文字改行を維持 */
+    }
+
+    /* 突起の外枠部分（1案目のbeforeと2案目のtop配置を合体） */
+    .ai-message::before {
+        content: "";
+        position: absolute;
+        top: 0;               /* 2案目の「上部」配置を採用 */
+        left: 25%;
+        border-style: solid;
+        /* 2案目の上向きの三角形の形状をベースに1案目の色を適用 */
+        border-width: 0 0 20px 20px;
+        border-color: transparent transparent #63e418;
+        translate: calc(-50% + 0.4px) -100%;
+        /* 1案目の歪み効果（skew）を付与 */
+        transform: skew(-25deg);
+        transform-origin: bottom;
+    }
+
+    /* 突起の内側塗りつぶし（1案目のafterと2案目のtop配置を合体） */
+    /* .partnar-message::after {
+        content: "";
+        position: absolute;
+        top: 35;               /* 2案目の「上部」配置を採用 */
+        /* right: 0; 右側に配置 */
+        /* border-style: solid; */
+        /* border-width: 0 0 15.2px 15.2px; */
+        /* border-color: transparent transparent #e2feff; */
+        /* translate: calc(-50% + 0.4px) -100%; */
+        /* 1案目の歪み効果（skew）を付与 */
+        /* transform: skew(-25deg); */
+        /* transform-origin: bottom; */
+    /* }  */
+
+    /* AI（裁判官）の回答：ご提示の2案を合体させた設計 */
+    .ai-message {
+        position: relative;
+        display: inline-block;
+        margin-top: 30px;    /* 上の突起のための余白 */
+        margin-bottom: 10px;
+        padding: 16px;
+        /* 1案目の枠線と角丸を採用 */
+        border: 2px solid #63e418; 
+        border-radius: 8px;
+        /* 1案目の背景色を採用 */
+        background-color: #2c2c2c;
+        text-align: left;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #fbf8f8;
+        max-width: 85%;
+        align-self: flex-start;
+        white-space: pre-wrap; /* 22文字改行を維持 */
+    }
+
+    /* 突起の外枠部分（1案目のbeforeと2案目のtop配置を合体） */
+    .ai-message::before {
+        content: "";
+        position: absolute;
+        top: 90;               /* 2案目の「上部」配置を採用 */
+        left: 25%;
+        border-style: solid;
+        /* 2案目の上向きの三角形の形状をベースに1案目の色を適用 */
+        border-width: 0 0 20px 20px;
+        border-color: transparent transparent #63e418;
+        translate: calc(-50% + 0.4px) -100%;
+        /* 1案目の歪み効果（skew）を付与 */
+        transform: skew(-25deg);
+        transform-origin: bottom;
+    }
+
+    /* 突起の内側塗りつぶし（1案目のafterと2案目のtop配置を合体） */
+    .ai-message::after {
+        content: "";
+        position: absolute;
+        top: 35;               /* 2案目の「上部」配置を採用 */
+        left: 25%;
+        border-style: solid;
+        border-width: 0 0 15.2px 15.2px;
+        border-color: transparent transparent #2c2c2c;
+        translate: calc(-50% + 0.4px) -100%;
+        /* 1案目の歪み効果（skew）を付与 */
+        transform: skew(-25deg);
+        transform-origin: bottom;
+    }
+        /* 旧式モデル--- AIメッセージ（左側に突起） --- */
+        /* .ai-message {
+            align-self: flex-start;
+            background-color: #2c2c2c; /* 裁判官らしい重厚な色、または #9bee8c に変更可 */
+            /* color: #ffffff; */
+        /* }  */
+
+        /* .ai-message::after { */
+            /* content: ""; */
+            /* position: absolute; */
+            /* top: 35%; */
+            /* left: 0; 左側に配置 */
+            /* border-style: solid; */
+            /* border-width: 0 16px 16px 0; 左向きの三角形 */
+            /* border-color: transparent #2c2c2c transparent transparent;
+            translate: -100% calc(-50% - 0.4px); */
+            /* transform: skew(0, 10deg); 逆方向に傾斜 */
+            /* transform-origin: right;
+        } */
+
+        /* 入力エリア */
+        #input-area {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #voice-input {
+            flex-grow: 1;
+            padding: 12px;
+            border-radius: 25px;
+            border: none;
+            background: #333;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+        #voice-input::placeholder {
+            color: #aaa;
+        }
+
+        /* ボタン共通 */
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            flex-shrink: 0; /* 縮小防止 */
+        }
+        .control-btn:active {
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
+            transform: translateY(1px);
+        }
+
+        /* マイク/送信ボタン */
+        #send-btn {
+            background-color: #1a73e8;
+            color: white;
+            font-size: 24px;
+        }
+        #send-btn.listening {
+            background-color: #d93025; /* 赤色で録音中 */
+        }
+        #send-btn:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+        
+        /* ログボタン */
+        #log-btn {
+            background-color: #28a745; /* 緑色 */
+            color: white;
+            font-size: 14px;
+            padding: 0 10px;
+            width: auto;
+            border-radius: 25px;
+            height: 50px;
+            line-height: 50px;
+            font-weight: bold;
+        }
+
+        /* ステータス表示 */
+        #status {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ddd;
+            font-size: 1.5em;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 15px;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        /* --- 追加：タイムライン表示エリア --- */
+        #timeline-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+            max-height: 25vh; /* 画面の1/4程度に収める */
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+}
+#timeline-container h3 {
+    margin: 0 0 10px 0;
+    font-size: 0.9em;
+    color: #007bff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.post-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 10px;
+    border-radius: 8px;
+    border-left: 3px solid #007bff;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.post-content {
+    font-size: 0.95em;
+    line-height: 1.4;
+    margin-bottom: 4px;
+}
+
+.post-date {
+    font-size: 0.75em;
+    color: #777;
+    text-align: right;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* スクロールバーのカスタマイズ */
+#timeline-container::-webkit-scrollbar,
+#chat-log::-webkit-scrollbar {
+    width: 4px;
+}
+#timeline-container::-webkit-scrollbar-thumb,
+#chat-log::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
+}
+
+/* チャットログの高さを調整（タイムラインがあるため） */
+/* チャットログ全体の調整：突起が隠れないようにする */
+#chat-log {
+    max-height: 80vh; /* 回答全部表示用 */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 15px;
+}
+        /* メッセージボックス */
+        #message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none;
+            text-align: center;
+        }
+        #message-box.visible {
+            opacity: 1;
+        }
+    /* </style> https://webspe.net/tools/speech-bubble/

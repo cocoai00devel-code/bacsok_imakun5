@@ -1,0 +1,20 @@
+{
+  "name": "my-backend",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:gen": "drizzle-kit generate",
+    "db:migrate": "wrangler d1 execute sign-language-db --local --file=./drizzle/0000_xxxx.sql"
+  },
+  "dependencies": {
+    "hono": "^4.0.0",
+    "drizzle-orm": "^0.30.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240403.0",
+    "drizzle-kit": "^0.20.14",
+    "typescript": "^5.0.0",
+    "wrangler": "^3.0.0"
+  }
+}

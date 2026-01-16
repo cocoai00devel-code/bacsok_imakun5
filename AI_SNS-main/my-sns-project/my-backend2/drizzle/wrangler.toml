@@ -1,0 +1,14 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "my-backend"
+main = "src/index.ts"
+compatibility_date = "2024-04-03"
+
+# D1 データベースの設定
+[[d1_databases]]
+binding = "DB" # プログラム（c.env.DB）からアクセスする名前
+database_name = "sign-language-db"
+database_id = "ここに実際のIDを貼り付けてください"
+
+# もし将来的にAI機能を使う場合は以下も追記します
+# [ai]
+# binding = "AI"
